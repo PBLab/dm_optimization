@@ -1,0 +1,48 @@
+% Create a noisy image
+img=zeros(256);
+g = imnoise(img,'gaussian',20/255);
+imwrite(g,'img_1.tif');
+% Find the mean value in the image 
+round_g=round(g,4);
+avg_g=mean(mean(g));
+round_avg=round(avg_g,4);
+[r,c]=find(round_g==round_avg);
+% For each image increase/decrease the mean value
+g(r,c)=30/255;
+imwrite(g,'img_2.tif');
+g(r,c)=40/255;
+imwrite(g,'img_3.tif');
+g(r,c)=50/255;
+imwrite(g,'img_4.tif');
+g(r,c)=60/255;
+imwrite(g,'img_5.tif');
+g(r,c)=70/255;
+imwrite(g,'img_6.tif');
+g(r,c)=80/255;
+imwrite(g,'img_7.tif');
+g(r,c)=90/255;
+imwrite(g,'img_8.tif');
+g(r,c)=100/255;
+imwrite(g,'img_9.tif');
+g(r,c)=110/255;
+imwrite(g,'img_10.tif');
+g(r,c)=120/255;
+imwrite(g,'img_11.tif');
+g(r,c)=100/255;
+imwrite(g,'img_12.tif');
+g(r,c)=120/255;
+imwrite(g,'img_13.tif');
+g(r,c)=140/255;
+imwrite(g,'img_14.tif');
+g(r,c)=160/255;
+imwrite(g,'img_15.tif');
+g(r,c)=170/255;
+imwrite(g,'img_16.tif');
+g(r,c)=180/255;
+imwrite(g,'img_17.tif');
+g(r,c)=190/255;
+imwrite(g,'img_18.tif');
+g(r,c)=200/255;
+imwrite(g,'img_19.tif');
+g(r,c)=210/255;
+imwrite(g,'img_20.tif');
