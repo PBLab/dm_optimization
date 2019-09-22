@@ -28,7 +28,6 @@ function newZernike = testIfHigher(oldParams, newParams,oldZernike,olderZernike)
         newZernike(Max)=10;
     else
         newZernike=GenerateRandVec(30,-10,0.1,10);
-        fprintf("Image was not improved")
-        fprintf('\n');
+        fprintf('Image was not improved.\n')
     end
 end

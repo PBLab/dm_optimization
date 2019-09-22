@@ -5,9 +5,5 @@ function updateMirror(oldParams, newParams,oldZernike,olderZernike)
     newZernike = testIfHigher(oldParams, newParams,oldZernike,olderZernike);
     % Send command to mirror
     MirrorCommand(newZernike);
-    fprintf("Command sent")
-    fprintf('\n');
-    % Update zernike vectors
-    save('olderZernike.mat','oldZernike')
-    save('oldZernike.mat','newZernike')
+    fprintf('Command sent\n');
 end
