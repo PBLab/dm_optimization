@@ -1,26 +1,37 @@
 function DMoptimization (src,evt,varargin)
-% User function for ScanImage, performs whenever a frame is acquired
+% User function for ScanImage, performs after pressing "Start" button
 hSI = src.hSI;
-persistent optimizationParams
-persistent oldZernikeVec
-persistent olderZernikeVec
+genesNum=30;    % Number of genes (Zernike modes)
+popSize=10;     % Population size (number of Zernike vectors), 
+                % must be an even number
+
+persistent pop
 
 switch evt.EventName
     case {'acqModeStart'}
-        % Initialize data for pipeline
-        optimizationParams = zeros(1);
-        olderZernikeVec = zeros(1,30);
-        oldZernikeVec = GenerateRandVec(30,-10,0.1,10);   
-        
+        % Initialize Zernike vectors population and send command to the
+        % mirror
+        pop = initialize (popSize,genesNum);
+        disp(pop)
     case {'frameAcquired'}
-        % Call pipeline to recieve new image parameters
-        optimizationParams = pipeline(...
-            hSI.hDisplay.lastFrame{1, 1}, ...
-            optimizationParams, ...
-            oldZernikeVec, ...
-            olderZernikeVec ...
-        );
+        frameNum=hSI.hDisplay.lastFrameNumber;
+        fprintf("Frame number: %d\n",frameNum)
+        img=hSI.hDisplay.lastFrame{1, 1};
+        % Call pipeline to create new generations, apply genetic algorithm
+        % and send mirror commands
+        [pop,savedPop]=pipeline(frameNum,img,pop,genesNum,popSize);
         % Plot the new parameters for each frame taken
-        graphParams(hSI.hDisplay.lastFrameNumber, optimizationParams);
+        graphParams(frameNum, fitnessFun(img));
+        % Find the best Zernike vector in the final population and send it
+        % to the mirror
+        if frameNum==hSI.hStackManager.framesPerSlice - 1
+           [row,~]=find(savedPop(:,genesNum+1)==max(savedPop(:,genesNum+1)));
+           MirrorCommand(pop(row(1),1:genesNum))
+        end
+        % Save the best frame
+        if frameNum==hSI.hStackManager.framesPerSlice
+            imwrite(img,'BestImage.jpg')
+        end         
+           
 end
 end
