@@ -22,7 +22,7 @@ function varargout = SIdmGUI(varargin)
 
 % Edit the above text to modify the response to help SIdmGUI
 
-% Last Modified by GUIDE v2.5 16-Sep-2019 11:27:33
+% Last Modified by GUIDE v2.5 08-Oct-2019 09:28:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,6 +55,8 @@ xlabel('Frame')
 ylabel('Intensity')
 setappdata(0,'handles',handles.axes1);
 
+setappdata(0,'fileName',0);
+setappdata(0,'filePath',0);
 % Choose default command line output for SIdmGUI
 handles.output = hObject;
 % get handle to the controller
@@ -116,3 +118,14 @@ function axes1_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: place code in OpeningFcn to populate axes1
+
+% --- Executes on button press in select.
+function select_Callback(hObject, eventdata, handles)
+% hObject    handle to select (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[fileName,filePath] = uigetfile('*.mat');
+setappdata(0,'fileName',fileName);
+setappdata(0,'filePath',filePath);
+
+guidata(hObject,handles)
