@@ -11,8 +11,20 @@ switch evt.EventName
     case {'acqModeStart'}
         % Initialize Zernike vectors population and send command to the
         % mirror
-        pop = initialize (popSize,genesNum);
-        disp(pop)
+        fileName=getappdata(0,'fileName');
+        filePath=getappdata(0,'filePath');
+        
+        if fileName==0
+            disp('No initial population was selected');
+            pop = initialize (popSize,genesNum);
+            disp(pop)
+        else
+            pop=importdata([filePath fileName]);
+            MirrorCommand(pop(1,1:genesNum));
+            fprintf('Command sent\n');
+            disp(pop)
+        end
+
     case {'frameAcquired'}
         frameNum=hSI.hDisplay.lastFrameNumber;
         fprintf("Frame number: %d\n",frameNum)
@@ -27,6 +39,7 @@ switch evt.EventName
         if frameNum==hSI.hStackManager.framesPerSlice - 1
            [row,~]=find(savedPop(:,genesNum+1)==max(savedPop(:,genesNum+1)));
            MirrorCommand(pop(row(1),1:genesNum))
+           fprintf('Command sent\n');
         end
         % Save the best frame
         if frameNum==hSI.hStackManager.framesPerSlice
