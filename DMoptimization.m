@@ -44,7 +44,6 @@ switch evt.EventName
         % Save the best frame
         if frameNum==hSI.hStackManager.framesPerSlice
             imwrite(img,'BestImage.jpg')
-        end         
-           
+        end                    
 end
 end
