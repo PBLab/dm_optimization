@@ -6,6 +6,7 @@ popSize=10;     % Population size (number of Zernike vectors),
                 % must be an even number
 
 persistent pop
+persistent returnedPop
 
 switch evt.EventName
     case {'acqModeStart'}
@@ -31,19 +32,14 @@ switch evt.EventName
         img=hSI.hDisplay.lastFrame{1, 1};
         % Call pipeline to create new generations, apply genetic algorithm
         % and send mirror commands
-        [pop,savedPop]=pipeline(frameNum,img,pop,genesNum,popSize);
+        [pop, returnedPop]=pipeline(frameNum,img,pop,genesNum,popSize);
         % Plot the new parameters for each frame taken
         graphParams(frameNum, fitnessFun(img));
+        
+    case {'acqDone'}
         % Find the best Zernike vector in the final population and send it
         % to the mirror
-        if frameNum==hSI.hStackManager.framesPerSlice - 1
-           [row,~]=find(savedPop(:,genesNum+1)==max(savedPop(:,genesNum+1)));
-           MirrorCommand(pop(row(1),1:genesNum))
-           fprintf('Command sent\n');
-        end
-        % Save the best frame
-        if frameNum==hSI.hStackManager.framesPerSlice
-            imwrite(img,'BestImage.jpg')
-        end                    
+        [row,~]=find(returnedPop(:,genesNum+1)==max(returnedPop(:,genesNum+1)));
+        MirrorCommand(pop(row(1),1:genesNum))
 end
 end

@@ -1,12 +1,11 @@
 function MirrorCommand(zernikeVector)
 % Add 'Wrapper' folder to Matlab path
-addpath( [pwd '/Wrapper/'] );
 % Set your mirror serial name
 mirrorSN = 'BAX278';
 % Initialise new mirror object
 dm = asdkDM( mirrorSN );
 % Load matrix Zernike to command matrix
-% in NOLL's order without Piston in µm RMS
+% in NOLL's order without Piston in ï¿½m RMS
 Z2C = importdata( [mirrorSN '-Z2C.mat'] );
 % Number of Zernike in Z2C (Zernike to mirror Command matrix)
 nZern = size(Z2C, 1);
