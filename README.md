@@ -10,3 +10,4 @@
 7. Load the `population.mat` file from `E:\Code\dm_optimization\population.mat`.
 8. Load the configuration file `DMConfig.cfg` from that same folder. Two user functions should load.
 9. Add the `Wrapper` folder into MATLAB's path. This folder is from Alpao, and usually located under the `Alpao/SDK/Samples/MATLAB` folder.
+10. Press "Start" on the SIdmGUI window to optimize the mirror's shape.

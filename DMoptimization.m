@@ -7,6 +7,8 @@ popSize=10;     % Population size (number of Zernike vectors),
 
 persistent pop
 persistent returnedPop
+persistent dm
+persistent Z2C
 
 switch evt.EventName
     case {'acqModeStart'}
@@ -14,32 +16,37 @@ switch evt.EventName
         % mirror
         fileName=getappdata(0,'fileName');
         filePath=getappdata(0,'filePath');
-        
+        mirrorSN = 'BAX278';
+        [dm, Z2C] = initMirror(mirrorSN);
         if fileName==0
             disp('No initial population was selected');
             pop = initialize (popSize,genesNum);
-            disp(pop)
         else
             pop=importdata([filePath fileName]);
-            MirrorCommand(pop(1,1:genesNum));
-            fprintf('Command sent\n');
-            disp(pop)
         end
+        disp(pop)
 
     case {'frameAcquired'}
         frameNum=hSI.hDisplay.lastFrameNumber;
-        fprintf('Frame number: %d\n',frameNum)
         img=hSI.hDisplay.lastFrame{1, 1};
-        % Call pipeline to create new generations, apply genetic algorithm
-        % and send mirror commands
-        [pop, returnedPop]=pipeline(frameNum,img,pop,genesNum,popSize);
-        % Plot the new parameters for each frame taken
+        individualNum = mod(frameNum, popSize);
+        
+        % During the popSize'th frame we're both updating the population
+        % vector and running the algorithm. Otherwise we're just updating
+        % the vector.
+        if mod(frameNum, popSize) ~= 0
+            [pop, returnedPop] = fillFitnessValue(individualNum, img, pop, genesNum, dm, Z2C);
+        else
+            % Call pipeline to create new generations, apply genetic algorithm
+            % and send mirror commands
+            [pop, returnedPop] = runAlgorithm(img, pop, genesNum, popSize, dm, Z2C);
+        end
         graphParams(frameNum, fitnessFun(img));
         
     case {'acqDone'}
         % Find the best Zernike vector in the final population and send it
         % to the mirror
         [row,~]=find(returnedPop(:,genesNum+1)==max(returnedPop(:,genesNum+1)));
-        MirrorCommand(pop(row(1),1:genesNum))
+        MirrorCommand(dm, pop(row(1),1:genesNum), Z2C)
 end
 end
