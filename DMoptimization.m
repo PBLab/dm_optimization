@@ -27,7 +27,7 @@ switch evt.EventName
 
     case {'frameAcquired'}
         frameNum=hSI.hDisplay.lastFrameNumber;
-        fprintf("Frame number: %d\n",frameNum)
+        fprintf('Frame number: %d\n',frameNum)
         img=hSI.hDisplay.lastFrame{1, 1};
         % Call pipeline to create new generations, apply genetic algorithm
         % and send mirror commands
