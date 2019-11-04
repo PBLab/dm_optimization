@@ -28,6 +28,7 @@ switch evt.EventName
 
     case {'frameAcquired'}
         frameNum=hSI.hDisplay.lastFrameNumber;
+        fprintf('Frame number: %d\n',frameNum)
         img=hSI.hDisplay.lastFrame{1, 1};
         individualNum = mod(frameNum, popSize);
         
@@ -35,7 +36,7 @@ switch evt.EventName
         % vector and running the algorithm. Otherwise we're just updating
         % the vector.
         if mod(frameNum, popSize) ~= 0
-            [pop, returnedPop] = fillFitnessValue(individualNum, img, pop, genesNum, dm, Z2C);
+            [pop] = fillFitnessValue(individualNum, img, pop, genesNum, dm, Z2C);
         else
             % Call pipeline to create new generations, apply genetic algorithm
             % and send mirror commands
@@ -48,5 +49,6 @@ switch evt.EventName
         % to the mirror
         [row,~]=find(returnedPop(:,genesNum+1)==max(returnedPop(:,genesNum+1)));
         MirrorCommand(dm, pop(row(1),1:genesNum), Z2C)
+        fprintf('Command sent\n');  
 end
 end
