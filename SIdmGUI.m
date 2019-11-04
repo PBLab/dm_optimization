@@ -22,7 +22,7 @@ function varargout = SIdmGUI(varargin)
 
 % Edit the above text to modify the response to help SIdmGUI
 
-% Last Modified by GUIDE v2.5 08-Oct-2019 09:28:23
+% Last Modified by GUIDE v2.5 04-Nov-2019 10:59:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,8 +51,8 @@ function SIdmGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to SIdmGUI (see VARARGIN)
-xlabel('Frame')
-ylabel('Intensity')
+xlabel(handles.axes1,'Frame')
+ylabel(handles.axes1,'Intensity')
 setappdata(0,'handles',handles.axes1);
 
 setappdata(0,'fileName',0);
@@ -129,3 +129,11 @@ setappdata(0,'fileName',fileName);
 setappdata(0,'filePath',filePath);
 
 guidata(hObject,handles)
+
+
+% --- Executes on button press in clear.
+function clear_Callback(hObject, eventdata, handles)
+% hObject    handle to clear (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+cla
