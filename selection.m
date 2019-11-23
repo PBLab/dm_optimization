@@ -5,7 +5,7 @@ for i=1:2
     bestInd=[];
     for j=1:k
         ind=oldPop(randi([1 popSize],1,1),:);
-        if isempty(bestInd)==1 || bestInd(1,genesNum+1)<ind(1,genesNum+1)
+        if isempty(bestInd)==1 || bestInd(1,genesNum+1)>ind(1,genesNum+1)
             bestInd=ind;
         end
     end
