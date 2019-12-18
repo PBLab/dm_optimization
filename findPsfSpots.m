@@ -1,21 +1,17 @@
-myStruct = function findPsfSpots(img, threshold, width_)
+function spots = findPsfSpots(img, threshold, width)
+% Finds all the PSF spots in a given image
 
-hist = histImage(img);
-topPercentile = getPerctile(hist, threshold);
-binaryImage = img(img > topPercentile);
-openedImage = imopen(binaryImage, width_);
+% Find a value that separates the spots from the backround
+topPercentile = prctile(img(:),threshold);
+% Create a binary image in which spots are 1 and background is 0
+binaryImage = im2bw(img,topPercentile);
+% Morphologically open the binary image
+openedImage = imopen(binaryImage, strel('disk',width));
+% Label each spot with a number
 labeled = bwlabel(openedImage);
-numOfElements = unique(labeled);
-for elem=1:numOfElements
-    myStruct.indices = find(labeled == elem)
-    myStruct.image = img(find(labeled == elem));
+% Find the indices of each spot
+for elem=1:max(max(labeled))
+    indicesName = ['SpotIndices_' num2str(elem)];
+    [spots.(indicesName)(:,1),spots.(indicesName)(:,2)] = find(labeled == elem);
 end
-
-gaussEqn = 'a*exp(-((x-b)/c)^2)+d'
-
-% a is approximately the maximal value of data
-% b is the centerpoint of our linspace
-% c is the std, which can be converted to FWHM
-% d is the offset value, approximately the minimal value of our data
-startVals = [a, b, c, d]
-f = fit(linspace(0, 100)', data.', gaussEqn, 'Start', startVals)
+end
