@@ -10,7 +10,8 @@ openedImage = imopen(binaryImage, strel('disk',width));
 % Label each spot with a number
 labeled = bwlabel(openedImage);
 % Find the indices of each spot
-for elem=1:max(max(labeled))
+spots = struct();
+for elem=1:max(labeled(:))
     indicesName = ['SpotIndices_' num2str(elem)];
     [spots.(indicesName)(:,1),spots.(indicesName)(:,2)] = find(labeled == elem);
 end
