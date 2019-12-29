@@ -23,8 +23,11 @@ switch evt.EventName
             pop = initialize (popSize,genesNum);
         else
             pop=importdata([filePath fileName]);
+            MirrorCommand(dm, pop(1,1:genesNum), Z2C)
+            fprintf('Command sent\n'); 
         end
         disp(pop)
+        
 
     case {'frameAcquired'}
         frameNum=hSI.hDisplay.lastFrameNumber;
