@@ -8,7 +8,7 @@ for i=1:2
         while true
             ind=oldPop(randi([1 popSize],1,1),:);
             if (length(ind) == genesNum + 1)
-                if isempty(bestInd) || bestInd(1,genesNum+1)>ind(1,genesNum+1)
+                if isempty(bestInd) || bestInd(1,genesNum+1)<ind(1,genesNum+1)
                    bestInd=ind;
                 end
                 break
