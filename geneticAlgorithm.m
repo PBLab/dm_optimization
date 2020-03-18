@@ -3,6 +3,7 @@ function newPop = geneticAlgorithm(oldPop,genesNum,popSize)
     
     pc=0.95;    % Default crossover probability
     pm=0.01;    % Default mutation probability 
+    newPop = zeros(popSize, genesNum);
     for k = 1: 2: popSize
         % Selection
         [ parent1, parent2] = selection(oldPop,popSize,genesNum);

@@ -4,7 +4,6 @@ function [newPop, savedPop] = runAlgorithm(img, pop, genesNum, popSize, dm, Z2C)
  newPop=pop;
  newPop(popSize,genesNum+1)=fitnessFun(img);
  savedPop=newPop;
- disp(savedPop)
  % Call genetic algorithm to recieve new population
  newPop = geneticAlgorithm(newPop,genesNum,popSize);
  MirrorCommand(dm, newPop(1,1:genesNum), Z2C);

@@ -3,15 +3,15 @@ function params = fitnessFun(image)
 % the image
 
 % Extract only the spots from the image
-threshold = 70; % The percentile below which there's a backround 
-width = 40; % Radius used to create a disk-shaped structuring element
-
-spots = findPsfSpots(image, threshold, width);
+threshold = 85; % The percentile below which there's a backround 
+width = 4; % Radius used to create a disk-shaped structuring element
+filtImage = imgaussfilt(image, 1);
+spots = findPsfSpots(filtImage, threshold, width);
 % For each spot, calculate mean FWHM of its horizontal and vertical signals
 fields = fieldnames(spots);
 FWHMs = zeros(1,length(fields));
 for i = 1:length(fields)
-    [horizontalSig,verticalSig] = extractSignal(image,spots.(fields{i}));
+    [horizontalSig,verticalSig] = extractSignal(filtImage,spots.(fields{i}));
     FWHMs(i) = mean([extractFWHM(horizontalSig,'transpose',1)...
         extractFWHM(verticalSig)]);
 end

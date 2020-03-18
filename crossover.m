@@ -5,8 +5,8 @@ if (rand<pc)
     lb = 1;
     % Random crossover point
     cpoint=round ((ub - lb) *rand() + lb);
-    child1=[parent1(1,1:cpoint) parent2(1,cpoint+1:genesNum) 0];
-    child2=[parent2(1,1:cpoint) parent1(1,cpoint+1:genesNum) 0];
+    child1=[parent1(1,1:cpoint) parent2(1,cpoint+1:genesNum)];
+    child2=[parent2(1,1:cpoint) parent1(1,cpoint+1:genesNum)];
 else
     child1=parent1;
     child2=parent2;
