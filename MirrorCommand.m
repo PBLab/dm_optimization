@@ -8,4 +8,11 @@ for n = 1:nZern
     zeroVec(n) = 0;      
 end
 pause(0.1);
+
+% for n = 1:min(nZern,15)
+%     zeroVec(n)=zernikeVector(n); 
+%     dm.Send( zeroVec * Z2C ); % Send command to mirror
+%     zeroVec(n) = 0;      
+% end
+% pause(0.1);    
 end
