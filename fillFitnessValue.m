@@ -9,6 +9,7 @@ fitness = fitnessFun(img);
 % user who is running this app probably started it with some points clearly
 % visible in the image.
 if isnan(fitness)
+    %newPop(individualNum, 1:genesNum + 1) = newPop(individualNum - 1, 1:genesNum + 1);
     newPop(individualNum, genesNum + 1) = newPop(individualNum - 1, genesNum + 1);
 else
     newPop(individualNum, genesNum + 1)= fitness;
