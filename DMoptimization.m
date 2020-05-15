@@ -58,6 +58,8 @@ switch evt.EventName
         [row,~]=find(returnedPop(:,genesNum+1)==min(returnedPop(:,genesNum+1)));
         MirrorCommand(dm, pop(row(1),1:genesNum), Z2C)
         assignin('base', 'pop', pop);
+%         MirrorCommand(dm, returnedPop(row(1),1:genesNum), Z2C)
+%         assignin('base', 'pop', returnedPop);
         fprintf('Command sent\n');  
 end
 end
