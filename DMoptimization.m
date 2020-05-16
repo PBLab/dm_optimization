@@ -59,7 +59,7 @@ switch evt.EventName
         MirrorCommand(dm, pop(row(1),1:genesNum), Z2C)
         assignin('base', 'pop', pop);
 %         MirrorCommand(dm, returnedPop(row(1),1:genesNum), Z2C)
-%         assignin('base', 'pop', returnedPop);
+%         assignin('base', 'pop', returnedPop(:,1:genesNum));
         fprintf('Command sent\n');  
 end
 end
