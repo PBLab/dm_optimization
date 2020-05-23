@@ -49,7 +49,9 @@ switch evt.EventName
                 % and send mirror commands
                 disp('Running algorithm for last frames');
                 [pop, returnedPop, fitness] = runAlgorithm(img, pop, genesNum, popSize, dm, Z2C);
-         
+                if imgNum == popSize*framesPerImg
+                    save('first_pop.mat','returnedPop')
+                end
             end
             graphParams(imgNum, fitness);
         end
@@ -59,6 +61,7 @@ switch evt.EventName
         [row,~]=find(returnedPop(:,genesNum+1)==min(returnedPop(:,genesNum+1)));
         MirrorCommand(dm, returnedPop(row(1),1:genesNum), Z2C)
         assignin('base', 'pop', returnedPop(:,1:genesNum));
+        save('final_pop.mat','returnedPop')
         fprintf('Command sent\n');  
         
 end
