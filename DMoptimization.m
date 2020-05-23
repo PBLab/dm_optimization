@@ -49,7 +49,7 @@ switch evt.EventName
                 % and send mirror commands
                 disp('Running algorithm for last frames');
                 [pop, returnedPop, fitness] = runAlgorithm(img, pop, genesNum, popSize, dm, Z2C);
-                if imgNum == popSize*framesPerImg
+                if imgNum == popSize
                     save('first_pop.mat','returnedPop')
                 end
             end
