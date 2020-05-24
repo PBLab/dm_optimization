@@ -2,8 +2,8 @@ function DMoptimization (src,evt,varargin)
 % User function for ScanImage, performs after pressing "Start" button
 hSI = src.hSI;
 genesNum=30;    % Number of genes (Zernike modes)
-popSize=10;     % Population size (number of Zernike vectors), must be even
-framesPerImg = 100;     
+popSize=20;     % Population size (number of Zernike vectors), must be even
+framesPerImg = 60;     
 channel = 2;
 
 persistent pop
@@ -42,22 +42,27 @@ switch evt.EventName
             % During the popSize'th frame we're both updating the population
             % vector and running the algorithm. Otherwise we're just updating
             % the vector.
-            if mod(imgNum, popSize) ~= 0
-                [pop] = fillFitnessValue(individualNum, img, pop, genesNum, dm, Z2C);
+            if mod(imgNum, popSize) ~= 0 
+                [pop, fitness] = fillFitnessValue(individualNum, img, pop, genesNum, dm, Z2C);
             else
                 % Call pipeline to create new generations, apply genetic algorithm
                 % and send mirror commands
-                disp('Running algorithm for last 1000 frames');
-                [pop, returnedPop] = runAlgorithm(img, pop, genesNum, popSize, dm, Z2C);
+                disp('Running algorithm for last frames');
+                [pop, returnedPop, fitness] = runAlgorithm(img, pop, genesNum, popSize, dm, Z2C);
+                if imgNum == popSize
+                    save('first_pop.mat','returnedPop')
+                end
             end
-            graphParams(imgNum, fitnessFun(img));
+            graphParams(imgNum, fitness);
         end
     case {'acqDone'}
         % Find the best Zernike vector in the final population and send it
         % to the mirror
         [row,~]=find(returnedPop(:,genesNum+1)==min(returnedPop(:,genesNum+1)));
-        MirrorCommand(dm, pop(row(1),1:genesNum), Z2C)
-        assignin('base', 'pop', pop);
+        MirrorCommand(dm, returnedPop(row(1),1:genesNum), Z2C)
+        assignin('base', 'pop', returnedPop(:,1:genesNum));
+        save('final_pop.mat','returnedPop')
         fprintf('Command sent\n');  
+        
 end
 end
