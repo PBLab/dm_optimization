@@ -2,7 +2,7 @@ function [newPop, savedPop, fitness] = runAlgorithm(img, pop, genesNum, popSize,
 % Once every "popSize" frames, after all of the population was given its
 % fitness value, we can run the new generation of the genetic algorithm.
  newPop=pop;
- fitness = fitnessFun(img);
+ fitness = fitnessMean(img);
  newPop(popSize,genesNum+1) = fitness;
  savedPop=newPop;
  % Call genetic algorithm to recieve new population

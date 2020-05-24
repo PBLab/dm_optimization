@@ -2,9 +2,9 @@ function DMoptimization (src,evt,varargin)
 % User function for ScanImage, performs after pressing "Start" button
 hSI = src.hSI;
 genesNum=30;    % Number of genes (Zernike modes)
-popSize=20;     % Population size (number of Zernike vectors), must be even
-framesPerImg = 60;     
-channel = 2;
+popSize=30;     % Population size (number of Zernike vectors), must be even
+framesPerImg = 30;     
+channel = 1;
 
 persistent pop
 persistent returnedPop
@@ -23,13 +23,14 @@ switch evt.EventName
         if fileName==0
             disp('No initial population was selected');
             pop = initialize (popSize,genesNum);
+            save('initial_pop.mat','pop')
         else
             pop=importdata([filePath fileName]);
             MirrorCommand(dm, pop(1,1:genesNum), Z2C)
             fprintf('Command sent\n'); 
         end
         img_array = zeros(hSI.hRoiManager.linesPerFrame,hSI.hRoiManager.pixelsPerLine,framesPerImg);
-        
+        hSI.hStackManager.framesPerSlice = checkIfTotalFramesAreMultiple(framesPerImg * popSize, hSI.hStackManager.framesPerSlice);
     case {'frameAcquired'}
         frameNum=hSI.hDisplay.lastFrameNumber;
         if mod(frameNum,framesPerImg)~= 0 
@@ -38,7 +39,7 @@ switch evt.EventName
             img = mean(img_array, 3);
             imgNum = floor(frameNum / framesPerImg);
             individualNum = mod(imgNum, popSize);
-            img = normalize_image(img);
+            % img = normalize_image(img);
             % During the popSize'th frame we're both updating the population
             % vector and running the algorithm. Otherwise we're just updating
             % the vector.
