@@ -2,7 +2,12 @@ function [newPop, fitness] = fillFitnessValue(individualNum, img, pop, genesNum,
 % Runs whenever we only want to add another fitness value to the population,
 % but not run the actual alogrithm.
 newPop = pop;
-fitness = fitnessMean(img);
+func = getappdata(0,'func');
+temp = sprintf('fitness%s',func);
+funcName = sprintf(strcat(temp,'%s'),'(img)');
+fitness = eval(funcName);
+%fitness = fitnessMean(img);
+
 % Since the fit can return a NaN value (== no spots were found) we use the
 % previous' individual vector for the current one. This might pose an error
 % if the first individual returns NaN, but that is very unlikely since the
