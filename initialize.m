@@ -5,4 +5,5 @@ function pop = initialize (popSize,genesNum)
     for i=2:popSize
         pop(i,1:genesNum)= GenerateRandVec(genesNum,-1,0.1,1);
     end
+    pop(:,3) = 0; % Defocus mode is not changed 
 end
