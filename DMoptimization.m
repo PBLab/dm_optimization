@@ -1,7 +1,8 @@
 function DMoptimization (src,evt,varargin)
 % User function for ScanImage, performs after pressing "Start" button
 hSI = src.hSI;    
-genesNum = getappdata(0,'genesNum'); % Number of genes (Zernike modes)
+genesNum = 30; % Number of genes (Zernike modes)
+generationsNum = getappdata(0,'generationsNum'); %Number of generations
 popSize = getappdata(0,'popSize'); % Population size (number of Zernike vectors), must be even
 framesPerImg = getappdata(0,'framesPerImg');
 channel = getappdata(0,'channel');
@@ -38,6 +39,7 @@ switch evt.EventName
                 fprintf('Command sent\n'); 
             end
             img_array = zeros(hSI.hRoiManager.linesPerFrame,hSI.hRoiManager.pixelsPerLine,framesPerImg);
+            hSI.hStackManager.framesPerSlice = generationsNum * popSize * framesPerImg;
             hSI.hStackManager.framesPerSlice = checkIfTotalFramesAreMultiple(framesPerImg * popSize, hSI.hStackManager.framesPerSlice);
         end
     case {'frameAcquired'}
