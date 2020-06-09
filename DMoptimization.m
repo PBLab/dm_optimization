@@ -13,13 +13,13 @@ persistent dm
 persistent Z2C
 persistent img_array
 
-vecName=getappdata(0,'vecName'); % loaded vector for mirror update
-vecPath=getappdata(0,'vecPath');
 mirrorSN = 'BAX278';
 [dm, Z2C] = initMirror(mirrorSN);
 
 switch evt.EventName
     case {'acqModeStart'}
+        vecName=getappdata(0,'vecName'); % loaded vector for mirror update
+        vecPath=getappdata(0,'vecPath');
         if vecName ~=0
             % Send loaded vector to the mirror, if exists 
             vecToSend = importdata([vecPath vecName]);
@@ -43,6 +43,7 @@ switch evt.EventName
             hSI.hStackManager.framesPerSlice = checkIfTotalFramesAreMultiple(framesPerImg * popSize, hSI.hStackManager.framesPerSlice);
         end
     case {'frameAcquired'}
+        vecName=getappdata(0,'vecName'); % loaded vector for mirror update
         if vecName ==0
             % Run algorithm if no single vector was loaded
             frameNum=hSI.hDisplay.lastFrameNumber;
