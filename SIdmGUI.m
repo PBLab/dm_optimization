@@ -259,6 +259,8 @@ case 'Mean' % User selects Mean.
    setappdata(0,'func','Mean');
 case 'FWHM' % User selects FWHM.
    setappdata(0,'func','FWHM');
+case 'Custom' % User selects Custom.
+   setappdata(0,'func','Custom');  
 end
 % Save the handles structure.
 guidata(hObject,handles)
