@@ -45,7 +45,7 @@ end
 hSI = [];
 if evalin('base','exist(''hSI'')')
     hSI = evalin('base','hSI');
-end
+    endupConfig
 
 hSICtl = [];
 if evalin('base','exist(''hSICtl'')')

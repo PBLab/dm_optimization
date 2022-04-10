@@ -6,7 +6,7 @@ numElemsFound = inf;
 while numElemsFound > expectedElems
     topPercentile = prctile(img(:),threshold);
     % Create a binary image in which spots are 1 and background is 0
-    binaryImage = im2bw(img,topPercentile);
+    binaryImage = imbinarize(img,topPercentile);
     % Morphologically open the binary image
     openedImage = imopen(binaryImage, strel('disk',width));
     % Label each spot with a number
