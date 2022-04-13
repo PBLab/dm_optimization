@@ -54,12 +54,13 @@ switch evt.EventName
         %set the number of frames to acquire in each loop (i.e. generation) as popSize * framesPerImg;
         hSI.hStackManager.framesPerSlice = pop_size * frames_per_image;
         hSI.hStackManager.framesPerSlice = checkIfTotalFramesAreMultiple(frames_per_image * pop_size, hSI.hStackManager.framesPerSlice);
-    
+        
         %set timer - could be better estimated but good enough to beging
         hSI.loopAcqInterval = INIT_INTERVAL_LEN_SEC;
         %% initialize data structure and population counter
-        data_stream = struct('gen_num',[],'img_num',[],'zernike_vals',[],...
-            'img_data',[],'fitness_val',[],'ismax',[],'time_stamp',[]); 
+        data_stream = struct('gen_num',[],'img_num',[],'ind_num',[],...
+            'zernike_vals',[],...
+            'img_data',[],'fitness_val',[],'ismax',[],'time_stamp',[]);
         
         generation_counter = 1;
         
@@ -67,7 +68,7 @@ switch evt.EventName
         
         %load pop from file
         
-        %create random 
+        %create random
         pop = initialize (pop_size,GENES_IN_POP);
         
         %send first individual (zernike modes) to mirror
@@ -75,7 +76,7 @@ switch evt.EventName
         
         %define fitness_function_handle to use based on user choise
         fitness_function_handle = @fitnessFun; %not implemented yet....
-    
+        
     case {'frameAcquired'}
         
         frame_num=hSI.hDisplay.lastFrameNumber;
@@ -83,11 +84,13 @@ switch evt.EventName
         if mod(frame_num,frames_per_image)== 0
             %store averaged frame each time that frames_per_img where acquired data
             
-            img_num = frame_num/frames_per_image;
+            img_num = frame_num/frames_per_image;% this is a running number for ALL images acquired
+            ind_num = img_num - pop_size * (generation_counter - 1);
             img =  hSI.hDisplay.lastAveragedFrame{1, channel_num};
             data_stream(img_num) = struct('gen_num',generation_counter,...
                 'img_num',img_num,...
-                'zernike_vals',pop(img_num,1:GENES_IN_POP),...
+                'ind_num',ind_num,...
+                'zernike_vals',pop(ind_num,1:GENES_IN_POP),...
                 'img_data',img,...
                 'fitness_val',-inf,... %we flag -inf so fitness function will work on it
                 'ismax',0,...
@@ -95,41 +98,33 @@ switch evt.EventName
             
             %send next zernike to mirror make sure not to go beyond pop
             %size, this indicates that we finished a generation
-            if img_num < pop_size
-                MirrorCommand(dm, pop(img_num,1:GENES_IN_POP), Z2C);
+            if ind_num < pop_size
+                MirrorCommand(dm, pop(ind_num,1:GENES_IN_POP), Z2C);
                 fprintf('\n Next ind sent to mirror')
             else
                 %evaluate current population
                 fprintf('\n\t Computing fitness values')
-                   [data_stream,fittest_ind_id] = ...
+                [data_stream,fittest_ind_id] = ...
                     compute_fitness_for_current_generation(data_stream,fitness_function_handle);
-                %assignin('base','data_stream',data_stream);%DEV
+                assignin('base','data_stream',data_stream);%DEV
                 
                 %send best individual to mirror
-                MirrorCommand(dm, pop(img_num,1:GENES_IN_POP), Z2C);
+                MirrorCommand(dm, data_stream(fittest_ind_id).zernike_vals, Z2C);
                 
                 %run GA
-                fittest_ind_id = fittest_ind_id - pop_size*(gene
-                 pop = geneticAlgorithm(pop,GENES_IN_POP,pop_size);
-
+                %pop = geneticAlgorithm(pop,GENES_IN_POP,pop_size);
                 
+                generation_counter = generation_counter + 1;
             end
         end
         
         
-    
+        
     case {'acqDone'}
         % Find the best Zernike vector in the final population and send it
-        %         % to the mirror
-        %         [row,~]=find(returnedPop(:,genesNum+1)==min(returnedPop(:,genesNum+1)));
-        %         bestVec = returnedPop(row(1),1:genesNum);
-        %         MirrorCommand(dm, bestVec, Z2C);
-        %         time_str = datestr(now,'yyyy-mm-dd_HH:MM');
-        %         save(sprintf('%s_best_vec.mat',time_str),'bestVec');
-        %         save(sprintf('%s_final_pop.mat',time_str),'returnedPop');
-        %         save(sprintf('%s_data.mat',time_str),'iteration_log');
+
         
-        fprintf('Command sent\n');
+        fprintf('Done\n');
         
     case {'acqAbort'}
         %clean up
