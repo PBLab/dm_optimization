@@ -110,7 +110,7 @@ function Start_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %handles.controller.startGrabAcquisition();
 getappdata(0)
-evalin('base','hSI.startGrab')
+evalin('base','hSI.startLoop') % we will run one loop iteration / generation
 
 % --- Executes on button press in Abort.
 function Abort_Callback(hObject, eventdata, handles)
