@@ -22,7 +22,7 @@ function varargout = SIdmGUI(varargin)
 
 % Edit the above text to modify the response to help SIdmGUI
 
-% Last Modified by GUIDE v2.5 28-Mar-2022 13:33:52
+% Last Modified by GUIDE v2.5 14-Apr-2022 22:55:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,18 +68,42 @@ end
 
 %pepare fitness axis
 setappdata(0,'axes_fitness',handles.axes_fitness);
-
+set(handles.axes_fitness,'NextPlot','add')
+xlabel(handles.axes_fitness,'Image #')
+ylabel(handles.axes_fitness,'Fitness')
 %prepare axis image
-
 setappdata(0,'axes_image_data',handles.axes_image_data);
 setappdata(0,'axes_image_best',handles.axes_image_best);
 setappdata(0,'axes_image_diff',handles.axes_image_diff);
-% Update handles structure
+axis(handles.axes_image_data,'off');
+axis(handles.axes_image_best,'off');
+axis(handles.axes_image_diff,'off');
+%% store user function handle
+h2pop = findobj(gcf,'Tag','popupmenu_select_fitness_fun');
+func_string = get(h2pop,'String');
+val = get(h2pop,'Value');
+selected_fitness_function = str2func(func_string{val});
+setappdata(0,'selected_fitness_function',selected_fitness_function);
+
+%% Update handles structure
 guidata(hObject, handles);
+
+%% add directories to path
+fprintf('\n Initializing GUI, adding folder to path')
+path_names_to_add = {'DM','Fitness','GA','GUI_utils','Utils',...
+    'Fitness/MEAN','Fitness/PIQE','Fitness/FWHM'};
+path_to_mfile = mfilename('fullpath');
+path_to_mfile = fileparts(path_to_mfile);
+
+for this_folder = path_names_to_add
+    addpath(fullfile(path_to_mfile,cell2mat(this_folder)))
+end
+
+%% update user functions
 
 % UIWAIT makes SIdmGUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-
+setup_user_functions
 
 % --- Outputs from this function are returned to the command line.
 function varargout = SIdmGUI_OutputFcn(hObject, eventdata, handles) 
@@ -110,7 +134,7 @@ function Start_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %handles.controller.startGrabAcquisition();
 getappdata(0)
-evalin('base','hSI.startLoop') % we will run one loop iteration / generation
+evalin('base','hSI.startLoop')
 
 % --- Executes on button press in Abort.
 function Abort_Callback(hObject, eventdata, handles)
@@ -259,34 +283,24 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu1.
-function popupmenu1_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
+% --- Executes on selection change in popupmenu_select_fitness_fun.
+function popupmenu_select_fitness_fun_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_select_fitness_fun (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-str = get(hObject, 'String');
+func_string = get(hObject,'String');
 val = get(hObject,'Value');
-% Set current data to the selected data set.
-switch str{val}
-case 'PIQE' % User selects PIQE.
-   setappdata(0,'func','PIQE');
-case 'Mean' % User selects Mean.
-   setappdata(0,'func','Mean');
-case 'FWHM' % User selects FWHM.
-   setappdata(0,'func','FWHM');
-case 'Custom' % User selects Custom.
-   setappdata(0,'func','Custom');  
-end
-% Save the handles structure.
-guidata(hObject,handles)
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+selected_fitness_function = str2func(func_string{val});
+setappdata(0,'selected_fitness_function',selected_fitness_function);
+
+%% Update handles structure
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
+function popupmenu_select_fitness_fun_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_select_fitness_fun (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 setappdata(0,'func','PIQE');
@@ -449,3 +463,6 @@ function uipanel6_DeleteFcn(hObject, eventdata, handles)
 % hObject    handle to uipanel6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+

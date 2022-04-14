@@ -14,3 +14,4 @@ end
 %% find fittest
 [~,max_i] = max([data_stream(idx).fitness_val]);
 fittest_ind_id = idx(max_i);
+data_stream(fittest_ind_id).ismax = 1;
