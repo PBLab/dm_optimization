@@ -6,7 +6,11 @@ function [data_stream,fittest_ind_id] = compute_fitness_for_current_generation(d
 idx = find([data_stream.fitness_val]==-Inf);
 
 for idx_i = idx
-    fitness = fitness_function_handle(data_stream(idx_i).img_data);
+    if isempty(data_stream(idx_i).img_data)
+        fitness = NaN;%HARDCODED
+    else
+        fitness = fitness_function_handle(data_stream(idx_i).img_data);
+    end
     data_stream(idx_i).fitness_val = fitness;
 end
 

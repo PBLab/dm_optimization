@@ -30,6 +30,7 @@ persistent curr_gen_best_img
 persistent prev_gen_best_img
 persistent T0
 persistent highest_fitness
+persistent session_id
 
 
 
@@ -72,7 +73,12 @@ switch evt.EventName
         %initialize persistent values
         generation_counter = 1;
         highest_fitness = -Inf;
+        prev_gen_best_img = [];
+        curr_gen_best_img = [];
+        %%
+        session_id = ['SIdmGUI_' datestr(now,'yyyymmdd_HHMMSS')]
         
+        %%
         %clear plots
         cla(getappdata(0,'axes_fitness'));
         cla(getappdata(0,'axes_image_data'));
@@ -117,7 +123,7 @@ switch evt.EventName
             
             if ind_num < pop_size
                 MirrorCommand(dm, pop(ind_num,1:GENES_IN_POP), Z2C);
-                fprintf('\n Next ind sent to mirror')
+%                 fprintf('\n Next ind sent to mirror')
             else
                 
                 try
@@ -138,11 +144,12 @@ switch evt.EventName
                     %append fitness values as one column after the zernike
                     %values... this is how pop is expected in the GA
                     %implementation
+                    %%
                     idx_in_current_generation = [data_stream.gen_num]==generation_counter;
                     img_nums_in_current_generation = [data_stream(idx_in_current_generation).img_num]';
                     fitness_vals = [data_stream(idx_in_current_generation).fitness_val]';
-                    %set NaN to zero... no the best approach but is a safegard
-                    fitness_vals(isnan(fitness_vals))=0;
+                    %set NaN to -1... no the best approach but is a safegard
+                    fitness_vals(isnan(fitness_vals))=-1;
                     pop = [pop fitness_vals];
                     
                     %% Update display
