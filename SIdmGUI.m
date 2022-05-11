@@ -22,7 +22,7 @@ function varargout = SIdmGUI(varargin)
 
 % Edit the above text to modify the response to help SIdmGUI
 
-% Last Modified by GUIDE v2.5 11-May-2022 14:05:14
+% Last Modified by GUIDE v2.5 11-May-2022 16:08:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -159,7 +159,8 @@ function select_best_ind_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [fileName,filePath] = uigetfile('*.mat');
 %load vector of zernike modes
-setappdata(0,'path_to_user_selected_best_ind_file',fileName);
+setappdata(0,'path_to_user_selected_best_ind_file',...
+    fullfile(filePath,fileName));
 guidata(hObject,handles)
 
 
@@ -507,7 +508,7 @@ function edit_variance_around_best_selected_ind_Callback(hObject, eventdata, han
 
 % Hints: get(hObject,'String') returns contents of edit_variance_around_best_selected_ind as text
 %        str2double(get(hObject,'String')) returns contents of edit_variance_around_best_selected_ind as a double
-current_val = str2num(get(gcbo,'String'));
+current_val = str2double(get(gcbo,'String'));
 set(gcbo,'Value',current_val)
 setappdata(0,'variance_around_best_selected_ind',current_val)
 
@@ -522,7 +523,7 @@ function edit_variance_around_best_selected_ind_CreateFcn(hObject, eventdata, ha
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-current_val = str2num(get(gcbo,'String'));
+current_val = str2double(get(gcbo,'String'));
 set(gcbo,'Value',current_val)
 setappdata(0,'variance_around_best_selected_ind',current_val)
 
@@ -534,3 +535,66 @@ function select_best_ind_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to select_best_ind (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+setappdata(0,'path_to_user_selected_best_ind_file','');
+
+% --- Executes on selection change in popupmenu_init_mode.
+function popupmenu_init_mode_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_init_mode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_init_mode contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_init_mode
+%%
+init_pop_mode_str = get(gcbo,'String');
+init_pop_mode_val = get(gcbo,'Value');
+init_pop_mode = init_pop_mode_str{init_pop_mode_val};
+setappdata(0,'init_pop_mode',init_pop_mode);
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_init_mode_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_init_mode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+init_pop_mode_str = get(gcbo,'String');
+init_pop_mode_val = get(gcbo,'Value');
+init_pop_mode = init_pop_mode_str{init_pop_mode_val};
+setappdata(0,'init_pop_mode',init_pop_mode);
+
+
+
+
+function edit_variance_around_rand_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_variance_around_rand (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_variance_around_rand as text
+%        str2double(get(hObject,'String')) returns contents of edit_variance_around_rand as a double
+current_val = str2double(get(gcbo,'String'));
+set(gcbo,'Value',current_val)
+setappdata(0,'variance_around_rand',current_val)
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_variance_around_rand_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_variance_around_rand (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+current_val = str2double(get(gcbo,'String'));
+set(gcbo,'Value',current_val)
+setappdata(0,'variance_around_rand',current_val)
+

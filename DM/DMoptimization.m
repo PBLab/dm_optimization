@@ -8,7 +8,7 @@ hSI = src.hSI;
 
 %% #HARCODED values
 GENES_IN_POP = 30; % Number of genes (Zernike modes) #HARDCODED
-INIT_INTERVAL_LEN_SEC = 10;% this is an initial guess of how it takes to acquire AND process each generation
+INIT_INTERVAL_LEN_SEC = 5;% this is an initial guess of how it takes to acquire AND process each generation
 
 %% parameters from GUI
 generations_to_run = getappdata(0,'generationsNum'); %Number of generations
@@ -48,10 +48,10 @@ switch evt.EventName
         clc
         T0=clock;
         
-        %% %initialize persistent values 
+        %% %initialize persistent values
         %initialize data structure and population counter
         data_stream = struct('gen_num',[],'img_num',[],'zernike_vals',[],...
-            'img_data',[],'fitness_val',[],'ismax',[],'time_stamp',[]);    
+            'img_data',[],'fitness_val',[],'ismax',[],'time_stamp',[]);
         generation_counter = 1;
         highest_fitness = -Inf;
         prev_gen_best_img = [];
@@ -77,7 +77,7 @@ switch evt.EventName
         
         %set timer - could be better estimated but good enough to beging
         hSI.loopAcqInterval = INIT_INTERVAL_LEN_SEC;
-
+        
         %%
         %clear plots
         cla(getappdata(0,'axes_fitness'));
@@ -89,11 +89,38 @@ switch evt.EventName
         warning off
         %% populate mirror with random population or the one selected by user
         
-        %load pop from file
+        %
         
+        %
         %create random
-        pop = initialize (pop_size,GENES_IN_POP);
-        
+        params.pop_size  = pop_size;
+        params.num_of_genes = GENES_IN_POP;
+        params.init_pop_mode = getappdata(0,'init_pop_mode');
+        if strcmp(params.init_pop_mode,'Random from best')
+            %load
+            path_to_user_selected_best_ind_file = getappdata(0,'path_to_user_selected_best_ind_file')
+            if isempty(path_to_user_selected_best_ind_file)
+                [fileName,filePath] = uigetfile('*.mat');
+                %load vector of zernike modes
+                setappdata(0,'path_to_user_selected_best_ind_file',...
+                    fullfile(filePath,fileName));
+            end
+        else
+            params.best = getappdata(0,'current_best_zernike_modes');
+            if isempty(params.best)
+                fprintf('\n No best zernikes stored, defaulting to random init pop');
+                params.init_pop_mode = 'Random pop';
+            end
+        end
+        params.variance_rand = getappdata(0,'variance_around_rand');
+        params.variance_best = getappdata(0,'variance_around_best_selected_ind');
+        params.best = getappdata(0,'current_best_zernike_modes');
+        try
+            pop = initialize (params);
+        catch
+            fprintf('\nerror during pop init');
+            fprintf('\n%s',lasterr);
+        end
         %send first individual (zernike modes) to mirror
         MirrorCommand(dm, pop(1,1:GENES_IN_POP), Z2C)
         
@@ -181,7 +208,12 @@ switch evt.EventName
                     
                     %set mirror
                     MirrorCommand(dm, best_zernike_modes, Z2C);
-                    fprintf('\n Next ind sent to mirror during abort')
+                    fprintf('\n Current best ind sent to mirror during abort')
+                    
+                    %update best zernke mode in GUI
+                    fprintf('\n Current best zernike stored in GUI data during abort')
+                    setappdata(0,'current_best_zernike_modes',best_zernike_modes);
+                    
                 end %try/catch
                 
             end
@@ -202,7 +234,12 @@ switch evt.EventName
         
         %set mirror
         MirrorCommand(dm, best_zernike_modes, Z2C);
-        fprintf('\n Next ind sent to mirror after optimization completed')
+        fprintf('\n Best ind sent to mirror after optimization completed')
+        
+        %update best zernke mode in GUI
+        fprintf('\n Current best zernike stored in GUI data')
+        setappdata(0,'current_best_zernike_modes',best_zernike_modes);
+        
         fprintf('\nAll done!!!')
     case {'acqAbort'}
         %clean up
