@@ -22,7 +22,7 @@ function varargout = SIdmGUI(varargin)
 
 % Edit the above text to modify the response to help SIdmGUI
 
-% Last Modified by GUIDE v2.5 14-Apr-2022 22:55:19
+% Last Modified by GUIDE v2.5 11-May-2022 14:05:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -152,15 +152,14 @@ function axes_fitness_CreateFcn(hObject, eventdata, handles)
 
 % Hint: place code in OpeningFcn to populate axes_fitness
 
-% --- Executes on button press in select.
-function select_Callback(hObject, eventdata, handles)
-% hObject    handle to select (see GCBO)
+% --- Executes on button press in select_best_ind.
+function select_best_ind_Callback(hObject, eventdata, handles)
+% hObject    handle to select_best_ind (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [fileName,filePath] = uigetfile('*.mat');
-setappdata(0,'fileName',fileName);
-setappdata(0,'filePath',filePath);
-
+%load vector of zernike modes
+setappdata(0,'path_to_user_selected_best_ind_file',fileName);
 guidata(hObject,handles)
 
 
@@ -465,4 +464,73 @@ function uipanel6_DeleteFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+% --- Executes on button press in push_button_select_output_dir.
+function push_button_select_output_dir_Callback(hObject, eventdata, handles)
+% hObject    handle to push_button_select_output_dir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%startpath is whatever is written in the edit_output_dir 
+startpath = get(handles.edit_output_dir,'String');
+output_dir_name = uigetdir(startpath, 'Select output directory');
+if ischar(output_dir_name)
+    set(handles.edit_output_dir,'String',output_dir_name)
+    setappdata(0,'output_dir_name',output_dir_name);
+end
 
+function edit_output_dir_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_output_dir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_output_dir as text
+%        str2double(get(hObject,'String')) returns contents of edit_output_dir as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_output_dir_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_output_dir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit_variance_around_best_selected_ind_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_variance_around_best_selected_ind (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_variance_around_best_selected_ind as text
+%        str2double(get(hObject,'String')) returns contents of edit_variance_around_best_selected_ind as a double
+current_val = str2num(get(gcbo,'String'));
+set(gcbo,'Value',current_val)
+setappdata(0,'variance_around_best_selected_ind',current_val)
+
+% --- Executes during object creation, after setting all properties.
+function edit_variance_around_best_selected_ind_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_variance_around_best_selected_ind (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+current_val = str2num(get(gcbo,'String'));
+set(gcbo,'Value',current_val)
+setappdata(0,'variance_around_best_selected_ind',current_val)
+
+
+
+
+% --- Executes during object creation, after setting all properties.
+function select_best_ind_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to select_best_ind (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called

@@ -31,7 +31,7 @@ persistent prev_gen_best_img
 persistent T0
 persistent highest_fitness
 persistent session_id
-
+persistent output_dir_name
 
 
 %% initialize mirror
@@ -47,7 +47,18 @@ switch evt.EventName
         %need to time in order to avoid loosing frames.
         clc
         T0=clock;
-        fprintf('Start of DM optimization cycle\n');
+        
+        %% %initialize persistent values 
+        %initialize data structure and population counter
+        data_stream = struct('gen_num',[],'img_num',[],'zernike_vals',[],...
+            'img_data',[],'fitness_val',[],'ismax',[],'time_stamp',[]);    
+        generation_counter = 1;
+        highest_fitness = -Inf;
+        prev_gen_best_img = [];
+        curr_gen_best_img = [];
+        session_id = ['SIdmGUI_' datestr(now,'yyyymmdd_HHMMSS')];
+        output_dir_name = getappdata(0,'output_dir_name');
+        fprintf('Start of DM optimization cycle - %s\n',session_id);
         
         %% setup loop acquisition parameters
         
@@ -66,18 +77,7 @@ switch evt.EventName
         
         %set timer - could be better estimated but good enough to beging
         hSI.loopAcqInterval = INIT_INTERVAL_LEN_SEC;
-        %% initialize data structure and population counter
-        data_stream = struct('gen_num',[],'img_num',[],'zernike_vals',[],...
-            'img_data',[],'fitness_val',[],'ismax',[],'time_stamp',[]);
-        
-        %initialize persistent values
-        generation_counter = 1;
-        highest_fitness = -Inf;
-        prev_gen_best_img = [];
-        curr_gen_best_img = [];
-        %%
-        session_id = ['SIdmGUI_' datestr(now,'yyyymmdd_HHMMSS')]
-        
+
         %%
         %clear plots
         cla(getappdata(0,'axes_fitness'));
@@ -123,7 +123,7 @@ switch evt.EventName
             
             if ind_num < pop_size
                 MirrorCommand(dm, pop(ind_num,1:GENES_IN_POP), Z2C);
-%                 fprintf('\n Next ind sent to mirror')
+                %                 fprintf('\n Next ind sent to mirror')
             else
                 
                 try
@@ -174,6 +174,14 @@ switch evt.EventName
                 catch
                     fprintf('\nABORT! \nCaught error %s',lasterr)
                     evalin('base','hSI.abort');
+                    
+                    %save w/unfinished flag (aka 0 in 4th parameter)
+                    fprintf('\nSaving data')
+                    best_zernike_modes = write_data_strem(session_id,output_dir_name,data_stream,0);
+                    
+                    %set mirror
+                    MirrorCommand(dm, best_zernike_modes, Z2C);
+                    fprintf('\n Next ind sent to mirror during abort')
                 end %try/catch
                 
             end
@@ -189,7 +197,13 @@ switch evt.EventName
         assignin('base','pop',pop);%DEV
         fprintf('\n\nCompleted DM optimization in %.4f\n',etime(clock,T0));
         
+        %save
+        best_zernike_modes = write_data_strem(session_id,output_dir_name,data_stream,1);
         
+        %set mirror
+        MirrorCommand(dm, best_zernike_modes, Z2C);
+        fprintf('\n Next ind sent to mirror after optimization completed')
+        fprintf('\nAll done!!!')
     case {'acqAbort'}
         %clean up
         assignin('base','data_stream',data_stream);%DEV
